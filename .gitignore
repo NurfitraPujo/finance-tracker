@@ -17,3 +17,6 @@
 # Env files
 *env.*
 !env.example.json
+
+# build files
+bin/*
