@@ -1,0 +1,42 @@
+name: Go
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Go 1.20
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      - name: Install dependencies
+        run:
+          go get ./...
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+      - name: Running Lint
+        run: make lint
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+      - name: Checking Securities
+        run: |
+          mkdir -p TestResults
+          make sec
+      - name: Running Test
+        run: |
+          make test
+          CODE_COVERAGE_SCORE=$(go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
+          echo $CODE_COVERAGE_SCORE
+          PASSED=$(echo "$CODE_COVERAGE_SCORE>=80" | bc)
+          if [ $PASSED -eq 0 ]; then
+            echo "Coverage below threshold"
+            exit 1
+          fi  
+
+
+
+
