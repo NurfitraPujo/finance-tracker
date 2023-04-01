@@ -2,6 +2,9 @@ name: Go
 
 on: [push]
 
+env:
+  IS_CI: true
+
 jobs:
   build:
 
@@ -28,7 +31,8 @@ jobs:
           make sec
       - name: Running Test
         run: |
-          make test
+          cp ./config/env-example.json ./config/env-test.json
+          APP_ENV=test make test
           CODE_COVERAGE_SCORE=$(go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
           echo $CODE_COVERAGE_SCORE
           PASSED=$(echo "$CODE_COVERAGE_SCORE>=80" | bc)

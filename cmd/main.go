@@ -13,5 +13,4 @@ func main() {
 	fmt.Println("build.GitCommit:\t", build.GitCommit)
 
 	config.LoadConfig()
-
 }
